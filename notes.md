@@ -16,3 +16,31 @@ Daily notes from building pawtree as a hands-on learning project.
 - Wrote cosine_similarity() from scratch in scratch/similarity.py
 - Learned the accumulator pattern: create before loop, += inside, use after (my bug: return inside the loop)
 - Results: 1.0 (identical), 0.0 (perpendicular), 0.998 for "dog vs puppy" — meaning similarity without word matching
+
+## Tuesday - 04/08/26
+- Added .env with OpenAi key
+- Added openai python-dotenv
+- Wrote a new scratch file embeddings.py where we are testing how embeddding is working with real openAI
+- Done the first API call with 1536 dimension, guessing the correct similarity and getting a better insight of what kind of words have higher similiartiy, the taxonomy is not always what we should be looking at as a comparsion. When we compare similarity we can see that some words are used more together then others
+
+This is the similarity we did test on, we can see which word and sentence that have higher similarity 
+
+hund vs valp: 0.40169928630460583
+hund vs traktor: 0.2915555736309729
+hund vs hund mening: 0.5431193002342756
+hund vs katt: 0.5364833635309183
+valp vs katt: 0.3357755623582491
+traktor vs traktor mening: 0.38304520192123953
+
+- Similarity retrieval finds what's ABOUT the topic — judging what's a good ANSWER is the LLM's job
+- Built mini_rag.py: 5 hardcoded breed chunks + a question, embedded all in ONE
+  API call, measured each chunk against the question with my own cosine_similarity,
+  sorted and picked top 2 — the full Retrieval step of RAG, by hand
+- Result: "Vilken hund passar i liten lägenhet?" → chihuahua won (0.528), but the
+  mudi (worst possible apartment dog!) came 2nd — perfect example of the line above:
+  retrieval found what's ABOUT the topic, judging fitness is the LLM's job
+- Code review round: explained the whole chain back — accumulator pattern,
+  key handling (.env → environment → client reads it itself), why question_vector
+  lives OUTSIDE the loop, why (score, chunk) order matters for sorted()
+- The division in cosine_similarity: divides away the SIZE of the vectors so only
+  direction/meaning remains — math feels ~60% clear, expect it to settle with use
