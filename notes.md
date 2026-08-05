@@ -44,3 +44,22 @@ traktor vs traktor mening: 0.38304520192123953
   lives OUTSIDE the loop, why (score, chunk) order matters for sorted()
 - The division in cosine_similarity: divides away the SIZE of the vectors so only
   direction/meaning remains — math feels ~60% clear, expect it to settle with use
+
+  ## Wednesday - 05/08/26
+
+- Created chat.py where we are testing the AI Chat function
+- Need to specify system roles in order to let it know how the AI should behave
+- Function calling: I describe my functions in JSON (name, description, parameters) —
+  the LLM READS the description and REQUESTS a call when needed; MY code executes it
+  and returns the result. The model never touches my system directly (safety!)
+- The model CHAINED calls on its own: got Kim's data, saw mother_reg_nr inside,
+  and requested a second lookup for FIN13537/96 — it navigated my key-reference
+  design without being told
+- Built the tool loop: while msg.tool_calls → execute, append request + result
+  to messages, ask again. My first version looped FOREVER because I never
+  appended — messages is the model's ONLY memory; if the history doesn't grow,
+  the model sees the same conversation and requests the same thing again
+- Production note: real systems cap the loop (max ~10 iterations) as a safety net
+- Prompt engineering is ITERATION: v1 ("you are an expert") changed nothing,
+  v2 got half-followed, v3 with explicit ORDER ("first answer = ONLY questions")
+  worked. Rules must be testable — same discipline as writing test requirements

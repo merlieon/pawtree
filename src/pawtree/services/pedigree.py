@@ -15,6 +15,11 @@ class PedigreeRegistry:
         if individual.mother_reg_nr is None:
             return None
         return self.get(individual.mother_reg_nr)
+    
+    def get_mother(self, individual: Individual) -> Individual | None:
+        if individual.mother_reg_nr is None:
+            return None
+        return self.get(individual.mother_reg_nr)
 
     def get_father(self, individual: Individual) -> Individual | None:
         if individual.father_reg_nr is None:
