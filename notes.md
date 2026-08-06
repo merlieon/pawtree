@@ -63,3 +63,17 @@ traktor vs traktor mening: 0.38304520192123953
 - Prompt engineering is ITERATION: v1 ("you are an expert") changed nothing,
   v2 got half-followed, v3 with explicit ORDER ("first answer = ONLY questions")
   worked. Rules must be testable — same discipline as writing test requirements
+
+## Thursday - 06/08/26
+
+- Built extract.py: structured output — messy Swedish ad text in, validated
+  Individual object out. client.chat.completions.parse + response_format=Individual:
+  my Pydantic model IS the contract that forces the LLM's answer shape
+- My | None fields worked as designed: chip_nr, mother_reg_nr etc came back null
+  when the ad didn't mention them — no invention
+- BUT: "född mars 1999" became birth_date 1999-03-01 — the model INVENTED day 1
+  because the schema REQUIRES a complete date. Schema beats prompt: a required
+  field on uncertain data produces silent hallucination
+- Also: it guessed "E78IOFW3" was the reg_nr and typo "Mudi q" was the name —
+  reasonable guesses, but extraction is a PROPOSAL, needs validation before saving
+- Design question raised for pawtree: should birth_date be date | None?
