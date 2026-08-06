@@ -10,7 +10,10 @@ class PedigreeRegistry:
 
     def get(self,  reg_nr: str) -> Individual | None:
         return self._individuals.get(reg_nr)
-
+    
+    def get_all(self) -> list[Individual]:
+        return list(self._individuals.values())
+    
     def get_mother(self, individual: Individual) -> Individual | None:
         if individual.mother_reg_nr is None:
             return None

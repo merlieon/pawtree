@@ -77,3 +77,16 @@ traktor vs traktor mening: 0.38304520192123953
 - Also: it guessed "E78IOFW3" was the reg_nr and typo "Mudi q" was the name —
   reasonable guesses, but extraction is a PROPOSAL, needs validation before saving
 - Design question raised for pawtree: should birth_date be date | None?
+- Built the individuals API: GET /individuals (list), GET /individuals/{reg_nr},
+  POST /individuals — decorators register functions as endpoints, /docs generated
+  free from my type annotations
+- 404 vs 500: asking for a missing dog is the CLIENT's error (404 + guard clause
+  + HTTPException), broken code is MINE (500). My own return types revealed the
+  gap (Individual | None vs -> Individual)
+- Trap: docs placeholder text became real data — "string" and "null" (as STRINGS!)
+  passed validation because they ARE valid strings. Type validation ≠ content
+  validation. Known production bug pattern!
+- POST on existing reg_nr silently OVERWRITES (dict behavior) — raised the 409
+  design question. And --reload wiped all posted data: in-memory registry has
+  no persistence → this is WHY databases exist (felt it, not just heard it)
+- REST grammar: plural nouns in URLs, verbs live in the HTTP method
