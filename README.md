@@ -3,11 +3,11 @@ An LLM-powered pedigree application — an advisor for choosing your next pet, a
 
 ## Features
 - Individual registry with REST API — add and look up dogs/cats by registration number, with full validation
+- Integrated pedigree LLM
 
 ## Features (planned)
 - Search for individuals and see their pedigree
 - Get info and links to other places for every individual in the pedigree
-- Integrated pedigree LLM
 - Adoption/Purchase Advisor
 - Pedigree Guide - give a breed and the LLM will tell you information and if it fits your needs
 - Breeder advisor - compare individuals to see if they are a good match
