@@ -15,4 +15,4 @@ class Individual(BaseModel):
     breed: str
     birth_date: date
     mother_reg_nr: str | None = None
-    father_reg_nr: str | None = None                     # → None, trädet tar slut
+    father_reg_nr: str | None = None

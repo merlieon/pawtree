@@ -3,6 +3,7 @@ from pawtree.services.pedigree import PedigreeRegistry
 from pawtree.services.advisor import PedigreeAdvisor
 from pawtree.models.individual import Sex, Individual
 from pawtree.models.chat import ChatRequest, ChatResponse
+from pawtree.models.pedigree import PedigreeNode
 from datetime import date
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -14,19 +15,31 @@ client = OpenAI()
 registry = PedigreeRegistry()
 advisor = PedigreeAdvisor(client, registry)
 
-mamma = Individual(
+mother = Individual(
     reg_nr="FIN13537/96", name="Sea-Rock Hip Hop Hihhuli",
     sex=Sex.female, breed="Mudi", birth_date=date(1996, 5, 1),
+    mother_reg_nr="SE12345/2019"
+)
+father = Individual(
+    reg_nr="FIN13537/97", name="Stefan",
+    sex=Sex.male, breed="Mudi", birth_date=date(1996, 5, 1),
 )
 kim = Individual(
-    reg_nr="SE12345/2019", name="Kim",
+    reg_nr="SE122994/2019", name="Kim",
     sex=Sex.female, breed="Mudi", birth_date=date(2019, 3, 10),
     mother_reg_nr="FIN13537/96",
+    father_reg_nr="FIN13537/97",
 )
 
+grandmother = Individual(
+    reg_nr="SE12345/2019", name="Karina",
+    sex=Sex.female, breed="Mudi", birth_date=date(1960, 5, 1),
+)
 
-registry.add(mamma)
+registry.add(mother)
 registry.add(kim)
+registry.add(father)
+registry.add(grandmother)
 
 @app.get("/health")
 def health() -> dict:
@@ -35,6 +48,10 @@ def health() -> dict:
 @app.get("/individuals")
 def get_all_individuals() -> list[Individual]:
     return registry.get_all()
+
+@app.get("/individuals/{reg_nr:path}/pedigree")
+def get_individuals_pedigree(reg_nr: str) -> PedigreeNode | None:
+    return registry.build_pedigree(reg_nr)
 
 @app.get("/individuals/{reg_nr:path}")
 def get_individuals(reg_nr: str) -> Individual:
@@ -47,6 +64,7 @@ def get_individuals(reg_nr: str) -> Individual:
 def create_individual(individual: Individual) -> Individual:
     registry.add(individual)
     return individual
+
 
 @app.post("/chat")
 def chat(request: ChatRequest) -> ChatResponse:

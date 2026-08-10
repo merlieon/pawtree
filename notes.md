@@ -90,3 +90,46 @@ traktor vs traktor mening: 0.38304520192123953
   design question. And --reload wiped all posted data: in-memory registry has
   no persistence → this is WHY databases exist (felt it, not just heard it)
 - REST grammar: plural nouns in URLs, verbs live in the HTTP method
+- Built PedigreeAdvisor service (services/advisor.py): moved the whole tool loop
+  from scratch/chat.py into a proper class — the LLM logic belongs in services,
+  not in the API layer
+- Dependency injection in practice: __init__ RECEIVES client + registry instead
+  of creating them. Same registry object the endpoints use — one source of truth.
+  Also makes the advisor testable without starting a web server
+- SYSTEM_PROMPT and TOOLS as class constants (they don't vary per instance),
+  but messages built fresh inside chat() — otherwise all users' conversations
+  would mix in the same history
+- Added ChatRequest / ChatResponse models — request and response are TWO
+  different shapes at two different times, not one combined model
+- POST /chat endpoint is only 2 lines: call the advisor, wrap the reply.
+  Thin API layer = the architecture is right
+- Recurring mistake caught again: PedigreeAdvisor.chat() (the CLASS) vs
+  advisor.chat() (the INSTANCE) — third time this week, same trap
+- Full chain working over HTTP: request → validation → advisor → LLM →
+  tool loop → my registry → chained lookup → JSON response
+
+## Friday - 07/08/26
+
+# Put into CV:
+- Python (FastAPI, Pydantic, uv)
+- REST-API-utveckling — endpoints, validering, felhantering, autogenererad dokumentation
+- LLM-integration — OpenAI API (chat completions, embeddings)
+- Function calling — verktygsanrop mot egna tjänster, med kontrollerad exekvering
+- Structured output — schemastyrd extraktion till validerade datamodeller
+- Prompt engineering — systemprompter, iterativ regeldesign
+- RAG-grunder — embeddings, cosine similarity, retrieval och rangordning
+
+## Monday - 10/08/26
+
+- Route matching goes top-down: FastAPI takes the FIRST pattern that matches,
+  so specific routes must be registered BEFORE greedy ones ({reg_nr:path} eats
+  everything after /individuals/). Order between route definitions matters —
+  unlike normal function definitions
+- Recursion: build_pedigree calls ITSELF for mother and father with generations-1.
+  Three stop conditions: reg_nr is None (unknown parent), individual not in
+  registry, or generations exhausted (safety against cycles/infinite depth)
+- PedigreeNode: the self-referencing model is BACK — the shape I rejected on
+  Monday for storage (siblings would get duplicate mothers) is exactly right
+  as a RESPONSE format. Same structure, different purpose
+- The key-reference design pays off: the tree is BUILT on demand from the flat
+  registry instead of being stored nested

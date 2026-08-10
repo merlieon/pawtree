@@ -1,5 +1,6 @@
 from datetime import date
 from pawtree.models.individual import Individual, Sex
+from pawtree.models.pedigree import PedigreeNode
 
 class PedigreeRegistry:
     def __init__(self) -> None:
@@ -18,33 +19,52 @@ class PedigreeRegistry:
         if individual.mother_reg_nr is None:
             return None
         return self.get(individual.mother_reg_nr)
-    
-    def get_mother(self, individual: Individual) -> Individual | None:
-        if individual.mother_reg_nr is None:
-            return None
-        return self.get(individual.mother_reg_nr)
 
     def get_father(self, individual: Individual) -> Individual | None:
         if individual.father_reg_nr is None:
             return None
         return self.get(individual.father_reg_nr)
+
+    def build_pedigree(self, reg_nr: str | None, generations: int = 3) -> PedigreeNode | None:
+        individual = self.get(reg_nr)
+        if individual is None:
+            return None
+        elif generations <= 0:
+            return PedigreeNode(individual=individual)
+        return PedigreeNode(
+            individual=individual,
+            mother=self.build_pedigree(individual.mother_reg_nr, generations - 1),
+            father=self.build_pedigree(individual.father_reg_nr, generations - 1)
+        )
     
 if __name__ == "__main__":
-    mamma = Individual(
+    mother = Individual(
         reg_nr="FIN13537/96", name="Sea-Rock Hip Hop Hihhuli",
         sex=Sex.female, breed="Mudi", birth_date=date(1996, 5, 1),
+        mother_reg_nr="SE12345/2019"
+    )
+    father = Individual(
+        reg_nr="FIN13537/97", name="Stefan",
+        sex=Sex.male, breed="Mudi", birth_date=date(1996, 5, 1),
     )
     kim = Individual(
-        reg_nr="SE12345/2019", name="Kim",
+        reg_nr="SE122994/2019", name="Kim",
         sex=Sex.female, breed="Mudi", birth_date=date(2019, 3, 10),
         mother_reg_nr="FIN13537/96",
+        father_reg_nr="FIN13537/97",
+    )
+
+    grandmother = Individual(
+        reg_nr="SE12345/2019", name="Karina",
+        sex=Sex.female, breed="Mudi", birth_date=date(1960, 5, 1),
     )
 
     registry = PedigreeRegistry()
 
-    registry.add(mamma)
+    registry.add(mother)
     registry.add(kim)
+    registry.add(father)
+    registry.add(grandmother)
 
-    mor = registry.get(kim.mother_reg_nr)
-    print(mor.name if mor else "ingen mamma hittad")      # → mammans namn
-    print(registry.get_mother(mamma)) 
+    tree = registry.build_pedigree("SE122994/2019")
+    print(tree.model_dump_json(indent=2))
