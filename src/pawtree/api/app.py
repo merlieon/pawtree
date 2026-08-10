@@ -4,6 +4,7 @@ from pawtree.services.advisor import PedigreeAdvisor
 from pawtree.models.individual import Sex, Individual
 from pawtree.models.chat import ChatRequest, ChatResponse
 from pawtree.models.pedigree import PedigreeNode
+from pawtree.services.breed_knowledge import BreedKnowledge, create_breed_collection
 from datetime import date
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -13,7 +14,10 @@ app = FastAPI()
 load_dotenv()
 client = OpenAI()
 registry = PedigreeRegistry()
-advisor = PedigreeAdvisor(client, registry)
+
+collection = create_breed_collection()
+knowledge = BreedKnowledge(collection)
+advisor = PedigreeAdvisor(client, registry, knowledge)
 
 mother = Individual(
     reg_nr="FIN13537/96", name="Sea-Rock Hip Hop Hihhuli",

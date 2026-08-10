@@ -3,6 +3,24 @@ from pawtree.models.individual import Individual, Sex
 from pawtree.models.pedigree import PedigreeNode
 
 class PedigreeRegistry:
+    TOOL_DEFINITION = {
+        "type": "function",
+        "function": {
+            "name": "get_individual",
+            "description": "Hämtar en hund eller katt från stamtavleregistret via registreringsnummer. Använd när användaren frågar om en specifik individ.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reg_nr": {
+                        "type": "string",
+                        "description": "Registreringsnummer, t.ex. SE12345/2019",
+                    }
+                },
+                "required": ["reg_nr"],
+            },
+        },
+    }
+
     def __init__(self) -> None:
         self._individuals: dict[str, Individual] = {}
 

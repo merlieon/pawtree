@@ -19,6 +19,7 @@ An LLM-powered pedigree application — an advisor for choosing your next pet, a
 - python-dotenv
 - uvicorn
 - openai
+- chromadb
 
 ## Status
 Early development. Built as a hands-on learning project — all code written by hand, no AI-generated code.

@@ -1,5 +1,6 @@
 from openai import OpenAI
 from pawtree.services.pedigree import PedigreeRegistry
+from pawtree.services.breed_knowledge import BreedKnowledge
 
 import json
 
@@ -12,27 +13,12 @@ class PedigreeAdvisor:
         - Ge bara förslag på 1 ras
         - Ställ alltid 2-3 motfrågor om användarens familj situation."""
 
-    TOOLS = [{
-        "type": "function",
-        "function": {
-            "name": "get_individual",
-            "description": "Hämtar en hund eller katt från stamtavleregistret via registreringsnummer. Använd när användaren frågar om en specifik individ.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "reg_nr": {
-                        "type": "string",
-                        "description": "Registreringsnummer, t.ex. SE12345/2019",
-                    }
-                },
-                "required": ["reg_nr"],
-            },
-        },
-    }]
+    TOOLS = [PedigreeRegistry.TOOL_DEFINITION, BreedKnowledge.TOOL_DEFINITION]
 
-    def __init__(self, client: OpenAI, registry: PedigreeRegistry):
+    def __init__(self, client: OpenAI, registry: PedigreeRegistry, knowledge: BreedKnowledge):
         self._client = client
         self._registry = registry
+        self.knowledge = knowledge
 
     def chat(self, question: str) -> str:
         messages = [
@@ -52,15 +38,22 @@ class PedigreeAdvisor:
             args = json.loads(tool_call.function.arguments)
         
             if tool_call.function.name == "get_individual":
-                result = self._registry.get(args["reg_nr"])
+                individual = self._registry.get(args["reg_nr"])
+                if individual is None:
+                    content = "Hittades inte i registret"
+                else:
+                    content = individual.model_dump_json()
+            elif tool_call.function.name == "search_breed_info":
+                chunks = self.knowledge.search(args["question"])
+                content = "\n\n".join(chunks)
             else:
-                result = None      # okänt verktyg → kontrollerat "hittades inte"
+                content = None      # okänt verktyg → kontrollerat "hittades inte"
         
             messages.append(msg)
             messages.append({
                 "role": "tool",
                 "tool_call_id": tool_call.id,
-                "content": result.model_dump_json() if result else "Hittades inte i registret",
+                "content": content,
             })
         
             response = self._client.chat.completions.create(
