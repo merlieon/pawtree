@@ -133,3 +133,22 @@ traktor vs traktor mening: 0.38304520192123953
   as a RESPONSE format. Same structure, different purpose
 - The key-reference design pays off: the tree is BUILT on demand from the flat
   registry instead of being stored nested
+
+## Tuesday - 11/08/26
+
+- PDF extraction failed on the two-column breed standard — text came out in wrong
+  order, headings separated from body. Lesson: the RIGHT source beats better tooling
+- Switched to SKK's breed descriptions (temperament, needs) instead of breed standards
+  (nose colour, withers height) — standards answer judges' questions, not owners'
+- Section-based chunking using known headings, plus max-length splitting at sentence
+  boundaries. Big chunks = blurry vectors: the exercise question ranked the grooming
+  section first and the actual answer third
+- Metadata vs prose: structured attributes (activity level, size) belong in metadata
+  for filtering; descriptive text gets embedded. Different data types, different tools
+- Sitemap as URL source instead of guessing — found chihuahua-kortharig/langharig
+  and variants I'd never have constructed by hand. 376 breed pages
+- Cached scraped chunks to JSON so I don't re-scrape on every test run
+- KEY: the model merged italiensk vinthund and whippet into one answer until I
+  labelled each chunk with its breed in the context. Retrieval quality isn't just
+  about finding the right chunks — the model needs to know which is which
+- Started frontend: Vite + React + TypeScript

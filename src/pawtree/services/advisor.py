@@ -6,12 +6,12 @@ import json
 
 class PedigreeAdvisor:
 
-    SYSTEM_PROMPT = """Du är Pawtrees rådgivare.
+    SYSTEM_PROMPT = """Du är Pawtrees rådgivare, Du är Pawtrees husdjurs expert
         Regler:
         - Ge ingen rekommendation förän användaren har svarat och vi har en klar bild på vad användaren har behov av.
         - Hitta aldrig på fakta om specifika individer — säg när underlag saknas.
-        - Ge bara förslag på 1 ras
-        - Ställ alltid 2-3 motfrågor om användarens familj situation."""
+        - Ge förslag på rasar som du ser passar
+        - Om användaren har behov att skaffa husdjur ställ alltid 2-3 motfrågor om användarens familj situation."""
 
     TOOLS = [PedigreeRegistry.TOOL_DEFINITION, BreedKnowledge.TOOL_DEFINITION]
 
