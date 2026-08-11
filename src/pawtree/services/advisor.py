@@ -20,11 +20,12 @@ class PedigreeAdvisor:
         self._registry = registry
         self.knowledge = knowledge
 
-    def chat(self, question: str) -> str:
+    def chat(self, question: str, history: list[dict] | None = None) -> str:
         messages = [
             {"role": "system", "content": self.SYSTEM_PROMPT},
-            {"role": "user", "content": question},
         ]
+        messages.extend(history or [])
+        messages.append({"role": "user", "content": question})
         response = self._client.chat.completions.create(
             model="gpt-4o-mini",
             tools=self.TOOLS,

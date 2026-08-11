@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pawtree.services.pedigree import PedigreeRegistry
 from pawtree.services.advisor import PedigreeAdvisor
 from pawtree.models.individual import Sex, Individual
@@ -10,7 +11,16 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 load_dotenv()
 client = OpenAI()
 registry = PedigreeRegistry()
@@ -72,5 +82,5 @@ def create_individual(individual: Individual) -> Individual:
 
 @app.post("/chat")
 def chat(request: ChatRequest) -> ChatResponse:
-    reply = advisor.chat(request.message)
+    reply = advisor.chat(request.message, request.history)
     return ChatResponse(reply=reply)

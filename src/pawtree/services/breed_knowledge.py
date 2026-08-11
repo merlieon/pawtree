@@ -83,7 +83,8 @@ class BreedKnowledge:
         "type": "function",
         "function": {
             "name": "search_breed_info",
-            "description": "Ge information om raser, användaren frågar om en specifik ras",
+            "description": """Ge information om raser, användaren frågar om en specifik ras
+            Använd alltid search_breed_info innan du svarar på frågor om raser eller rasegenskaper — även uppföljningsfrågor""",
             "parameters": {
                 "type": "object",
                 "properties": {

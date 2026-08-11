@@ -152,3 +152,4 @@ traktor vs traktor mening: 0.38304520192123953
   labelled each chunk with its breed in the context. Retrieval quality isn't just
   about finding the right chunks — the model needs to know which is which
 - Started frontend: Vite + React + TypeScript
+- Added History in ChatRequest
