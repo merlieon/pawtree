@@ -30,6 +30,8 @@ git clone https://github.com/merlieon/pawtree.git
 cd pawtree
 uv sync
 uv run uvicorn pawtree.api.app:app --reload  # Starts the API server at http://127.0.0.1:8000 — interactive docs at /docs
+cd frontend
+npm run dev # Starts the Frontend vite server
 ```
 
 ## Data sources

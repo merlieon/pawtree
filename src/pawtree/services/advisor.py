@@ -21,10 +21,16 @@ class PedigreeAdvisor:
         self.knowledge = knowledge
 
     def chat(self, question: str, history: list[dict] | None = None) -> str:
+        clean_history = [
+            {"role": m["role"], "content": m["content"]}
+            for m in (history or [])
+            if m.get("role") in ("user", "assistant") and m.get("content")
+        ]
+
         messages = [
             {"role": "system", "content": self.SYSTEM_PROMPT},
         ]
-        messages.extend(history or [])
+        messages.extend(clean_history)
         messages.append({"role": "user", "content": question})
         response = self._client.chat.completions.create(
             model="gpt-4o-mini",
@@ -35,27 +41,27 @@ class PedigreeAdvisor:
         msg = response.choices[0].message
 
         while msg.tool_calls:
-            tool_call = msg.tool_calls[0]
-            args = json.loads(tool_call.function.arguments)
-        
-            if tool_call.function.name == "get_individual":
-                individual = self._registry.get(args["reg_nr"])
-                if individual is None:
-                    content = "Hittades inte i registret"
-                else:
-                    content = individual.model_dump_json()
-            elif tool_call.function.name == "search_breed_info":
-                chunks = self.knowledge.search(args["question"])
-                content = "\n\n".join(chunks)
-            else:
-                content = None      # okänt verktyg → kontrollerat "hittades inte"
-        
             messages.append(msg)
-            messages.append({
-                "role": "tool",
-                "tool_call_id": tool_call.id,
-                "content": content,
-            })
+            for tool_call in msg.tool_calls:
+                args = json.loads(tool_call.function.arguments)
+            
+                if tool_call.function.name == "get_individual":
+                    individual = self._registry.get(args["reg_nr"])
+                    if individual is None:
+                        content = "Hittades inte i registret"
+                    else:
+                        content = individual.model_dump_json()
+                elif tool_call.function.name == "search_breed_info":
+                    chunks = self.knowledge.search(args["question"])
+                    content = "\n\n".join(chunks)
+                else:
+                    content = "Okänt verktyg"      # okänt verktyg → kontrollerat "hittades inte"
+            
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "content": content,
+                })
         
             response = self._client.chat.completions.create(
             model="gpt-4o-mini",
