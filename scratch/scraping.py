@@ -49,7 +49,7 @@ if __name__ == "__main__":
     breed_urls = get_breed_urls()
     all_chunks = []
 
-    for i, url in enumerate(breed_urls[:20], start=1):
+    for i, url in enumerate(breed_urls, start=1):
         chunks = scrape_breed(url)
         all_chunks.extend(chunks)
         print(f"{i}/{len(breed_urls)} {url}: {len(chunks)} chunks")

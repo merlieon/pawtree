@@ -7,14 +7,14 @@ SECTIONS = [
 ]
 
 def create_breed_collection() -> chromadb.Collection:
-    client = chromadb.Client()
-    collection = client.create_collection(name="breeds")
+    client = chromadb.PersistentClient(path="data/chroma_db")
 
-    chunkss = load_breed_document("data/mudi.txt", {
-        "breed": "mudi", "source": "skk", "activity_level": "hög",
-        "grooming": "lite större", "size": "medel",
-        "group": "vallhund", "origin": "Ungern",
-    })
+    try:
+        return client.get_collection(name="breeds")
+    except Exception:
+        pass
+
+    collection = client.create_collection(name="breeds")
 
     with open("data/breeds.json", encoding="utf-8") as f:
         chunks = json.load(f)
@@ -22,7 +22,7 @@ def create_breed_collection() -> chromadb.Collection:
     collection.add(
         documents=[c["text"] for c in chunks],
         metadatas=[c["metadata"] for c in chunks],
-        ids=[f"breed_{i}" for i in range(len(chunks))]
+        ids=[f"chunk_{i}" for i in range(len(chunks))]
     )
     return collection
 

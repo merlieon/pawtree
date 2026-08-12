@@ -153,3 +153,8 @@ traktor vs traktor mening: 0.38304520192123953
   about finding the right chunks — the model needs to know which is which
 - Started frontend: Vite + React + TypeScript
 - Added History in ChatRequest
+
+## Wednesday - 11/08/26
+
+- Handle multiple tool calls
+- Create Frontend with working chat bot
