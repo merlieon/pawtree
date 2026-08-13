@@ -1,0 +1,18 @@
+.chat-bubble {
+  border-radius: var(--radius-lg);
+  padding: 8px 12px;
+  max-width: 75%;
+  font-size: 14px;
+  word-break: break-word;
+  color: var(--color-text-primary);
+}
+
+.chat-bubble--user {
+  align-self: flex-end;
+  background: var(--color-bubble-user);
+}
+
+.chat-bubble--assistant {
+  align-self: flex-start;
+  background: var(--color-bubble-assistant);
+}

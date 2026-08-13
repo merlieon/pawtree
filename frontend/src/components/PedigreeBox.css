@@ -1,0 +1,33 @@
+.pedigree-node {
+  display: flex;
+  align-items: center;
+}
+
+.pedigree-box {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 10px;
+}
+
+.pedigree-box__name {
+  color: var(--color-text-primary);
+}
+
+.pedigree-box__reg {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.pedigree-stub {
+  width: 20px;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.pedigree-children {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-left: 1px solid var(--color-border);
+  padding-left: 20px;
+}

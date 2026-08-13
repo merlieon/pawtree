@@ -1,3 +1,4 @@
+import './PedigreeBox.css'
 import type { PedigreeNode } from '../types'
 
 interface Props {
@@ -8,22 +9,16 @@ function PedigreeBox({ node }: Props) {
   const hasChildren = node.mother || node.father
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <div style={{ border: '1px solid white', padding: '10px', borderRadius: '8px' }}>
-        <div>{node.individual.name}</div>
-        <div style={{ fontSize: '12px', opacity: 0.6 }}>{node.individual.reg_nr}</div>
+    <div className="pedigree-node">
+      <div className="pedigree-box">
+        <div className="pedigree-box__name">{node.individual.name}</div>
+        <div className="pedigree-box__reg">{node.individual.reg_nr}</div>
       </div>
 
       {hasChildren && (
         <>
-          <div style={{ width: '20px', height: '1px', background: 'white' }} />
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '20px',
-            borderLeft: '1px solid white',
-            paddingLeft: '20px',
-          }}>
+          <div className="pedigree-stub" />
+          <div className="pedigree-children">
             {node.mother && <PedigreeBox node={node.mother} />}
             {node.father && <PedigreeBox node={node.father} />}
           </div>
