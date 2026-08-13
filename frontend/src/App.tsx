@@ -1,11 +1,10 @@
-import type { PedigreeNode } from './types'
-import { useState, useEffect } from 'react'
-import PedigreeBox from './PedigreeBox'
+import type { PedigreeNode, Message } from './types'
+import { useState } from 'react'
+import ChatCard from './components/ChatCard'
+import ChatBubble from './components/ChatBubble'
+import PedigreeBox from './components/PedigreeBox'
 
-interface Message {
-  role: 'user' | 'assistant'
-  content: string
-}
+
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -33,27 +32,42 @@ function App() {
       setTree(data.pedigree)
     }
   }
-
   return (
-    <div>
-      <div>
-        {tree && <PedigreeBox node={tree} />}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100%', maxWidth: '900px', margin: '0 auto', boxSizing: 'border-box', overflowX: 'hidden' }}>
+
+      {/* Header */}
+      <div style={{ padding: '1.5rem 1rem 0' }}>
+        <p style={{ fontSize: '18px', fontWeight: 500, margin: 0 }}>Pawtree</p>
+        <p style={{ fontSize: '13px', color: '#888', margin: 0 }}>Stamtavla och rasrådgivning</p>
       </div>
-      <div>
-      {messages.map((msg, i) => (
-        <div key={i}>
-          <strong>{msg.role}:</strong> {msg.content}
+
+      {/* Trädkort — FAST, egen sektion */}
+      {tree && (
+        <div style={{
+          border: '0.5px solid #444',
+          borderRadius: '12px',
+          padding: '1rem',
+          margin: '1rem 1rem 0',
+          maxHeight: '280px',
+          overflow: 'auto',
+        }}>
+          <PedigreeBox node={tree} />
         </div>
-      ))}
+      )}
+
+      {/* Meddelanden — enda delen som scrollar */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', minWidth: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {messages.map((msg, i) => <ChatBubble key={i} message={msg} />)}
+        </div>
       </div>
-      <input
-      value={input}
-      onChange={(e => setInput(e.target.value))}
-      placeholder='Fråga om en hundras...'
-      />
-      <button onClick={send}>Skicka</button>
+
+      {/* Input — fast botten */}
+      <div style={{ display: 'flex', gap: '8px', padding: '1rem', borderTop: '0.5px solid #444' }}>
+        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Fråga om en hundras..." style={{ flex: 1, minWidth: 0 }} />
+        <button onClick={send}>Skicka</button>
       </div>
-      
+    </div>
   )
 }
 

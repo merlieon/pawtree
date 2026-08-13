@@ -15,3 +15,8 @@ export interface PedigreeNode {
     mother: PedigreeNode | null
     father: PedigreeNode | null
 }
+
+export interface Message {
+  role: 'user' | 'assistant'
+  content: string
+}

@@ -1,4 +1,4 @@
-import type { PedigreeNode } from './types'
+import type { PedigreeNode } from '../types'
 
 interface Props {
   node: PedigreeNode
