@@ -12,3 +12,4 @@ wheels/
 
 # data
 data/chroma_db/
+data/pawtree.db

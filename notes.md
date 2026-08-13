@@ -154,7 +154,7 @@ traktor vs traktor mening: 0.38304520192123953
 - Started frontend: Vite + React + TypeScript
 - Added History in ChatRequest
 
-## Wednesday - 11/08/26
+## Wednesday - 12/08/26
 
 - Create Frontend with working chat bot
 - Fixed multi-tool bug: for-loop over tool_calls needed BOTH the append(msg) 
@@ -172,5 +172,34 @@ traktor vs traktor mening: 0.38304520192123953
 - Production thinking: ingest should be a separate pipeline from serving, 
   not triggered by server startup — noted as TODO
 
-  
-  Hur ser Kims släktträd ut? Reg nr SE122994/2019
+## Thursday - 13/08/26
+
+- Moved from inline styles to per-component CSS files (ChatBubble.css, 
+  PedigreeBox.css, App.css) + shared index.css with CSS variables — same 
+  separation-of-concerns idea as backend services, styling lives next to 
+  the component it belongs to
+- BEM naming convention (block__element, block--modifier) for predictable 
+  class names as the project grows
+- Migrated PedigreeRegistry to SQLite (SQLAlchemy ORM) — data now survives 
+  server restarts instead of resetting on every --reload
+- Encapsulation paid off: get_mother/get_father/build_pedigree needed ZERO 
+  changes, since they only ever called self.get(...) — the public interface 
+  stayed identical while the storage implementation swapped underneath
+- Split responsibilities: db/models.py (schema), db/session.py (engine setup, 
+  create_all), services/pedigree.py (only knows how to read/write individuals) 
+  — same separation as create_breed_collection() living outside BreedKnowledge
+- Debugging chain: class-vs-instance mistake (PedigreeRegistry.get_all() 
+  instead of registry.get_all()) masked the real bug — session.commit 
+  (missing parentheses) meant nothing was ever saved, but no exception was 
+  raised because SQLAlchemy just rolled back silently on session close. 
+  Traced it by printing at every step until reality diverged from expectation
+- Schema changes require rebuilding the SQLite file — create_all() only 
+  creates missing tables, never alters existing ones. In production this is 
+  what Alembic migrations solve; for a demo db, delete-and-recreate is fine
+- IndividualRow (SQLAlchemy) and Individual (Pydantic) must have identical 
+  fields — model_dump() → IndividualRow(**dict) breaks with TypeError if 
+  Pydantic has fields SQLAlchemy's model doesn't
+
+Questions to ask AI:
+
+- Hur ser Kims släktträd ut? Reg nr SE122994/2019

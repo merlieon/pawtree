@@ -1,6 +1,9 @@
 from datetime import date
 from pawtree.models.individual import Individual, Sex
 from pawtree.models.pedigree import PedigreeNode
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session
+from pawtree.db.models import IndividualRow
 
 class PedigreeRegistry:
     TOOL_DEFINITION = {
@@ -44,17 +47,26 @@ class PedigreeRegistry:
         },
     }
 
-    def __init__(self) -> None:
-        self._individuals: dict[str, Individual] = {}
+    def __init__(self, engine: Engine) -> None:
+        self._engine = engine
 
     def add(self, individual: Individual) -> None:
-        self._individuals[individual.reg_nr] = individual 
+        with Session(self._engine) as session:
+            row = IndividualRow(**individual.model_dump())
+            session.add(row)
+            session.commit()
 
     def get(self,  reg_nr: str) -> Individual | None:
-        return self._individuals.get(reg_nr)
+        with Session(self._engine) as session:
+            row = session.get(IndividualRow, reg_nr)
+            if row is None:
+                return None
+            return Individual.model_validate(row, from_attributes=True)
     
     def get_all(self) -> list[Individual]:
-        return list(self._individuals.values())
+        with Session(self._engine) as session:
+            rows = session.query(IndividualRow).all()
+            return [Individual.model_validate(r, from_attributes=True) for r in rows]
     
     def get_mother(self, individual: Individual) -> Individual | None:
         if individual.mother_reg_nr is None:

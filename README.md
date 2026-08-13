@@ -36,3 +36,4 @@ npm run dev # Starts the Frontend vite server
 
 ## Data sources
 - [SKK Hunddata](https://hundar.skk.se/hunddata/hund_sok.aspx) — Swedish Kennel Club's pedigree database, used as reference for the data model
+- [SiteMap for breeds](https://www.skk.se/sitemap.xml) - Swedish Kennel Club's pedigree sitemap.xml
