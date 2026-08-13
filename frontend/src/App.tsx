@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import type { PedigreeNode } from './types'
+import { useState, useEffect } from 'react'
+import PedigreeBox from './PedigreeBox'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -8,10 +10,10 @@ interface Message {
 function App() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
+  const [tree, setTree] = useState<PedigreeNode | null>(null)
 
   async function send() {
     if (!input.trim()) return
-
     const userMessage: Message = { role: 'user', content: input }
     const newMessages = [...messages, userMessage]
     setMessages(newMessages)
@@ -26,10 +28,17 @@ function App() {
     const data = await res.json()
     const assistantMessage: Message = { role: 'assistant', content: data.reply }
     setMessages([...newMessages, assistantMessage])
+
+    if (data.pedigree) {
+      setTree(data.pedigree)
+    }
   }
 
   return (
     <div>
+      <div>
+        {tree && <PedigreeBox node={tree} />}
+      </div>
       <div>
       {messages.map((msg, i) => (
         <div key={i}>
@@ -44,6 +53,7 @@ function App() {
       />
       <button onClick={send}>Skicka</button>
       </div>
+      
   )
 }
 

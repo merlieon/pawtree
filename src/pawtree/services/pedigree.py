@@ -21,6 +21,29 @@ class PedigreeRegistry:
         },
     }
 
+    PEDIGREE_TOOL_DEFINITION = {
+        "type": "function",
+        "function": {
+            "name": "get_pedigree",
+            "description": """Hämtar en individs stamtavla (föräldrar, far- och morföräldrar) via registreringsnummer. Använd när användaren vill se släktträdet för en specifik hund eller katt.
+                regler:
+                    - När get_pedigree används: svara ENDAST med en kort kommentar om raserna som 
+                    förekommer i trädet (max 2-3 meningar). Nämn ALDRIG namn, regnummer eller 
+                    släktrelationer i texten — allt det visas redan i det ritade trädet.
+            """,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reg_nr": {
+                        "type": "string",
+                        "description": "Registreringsnummer för individen vars stamtavla ska hämtas, t.ex. SE12345/2019",
+                    }
+                },
+                "required": ["reg_nr"],
+            },
+        },
+    }
+
     def __init__(self) -> None:
         self._individuals: dict[str, Individual] = {}
 

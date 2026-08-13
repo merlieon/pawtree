@@ -7,3 +7,8 @@ chroma_db folder → restart). For production this needs to be a proper pipeline
   known-good collection
 - This is the standard pattern in real RAG systems: ingest and serving are
   separate concerns with separate lifecycles
+
+TODO: Individual model has no health/notes fields, so pedigree chat commentary 
+is limited to breed-level facts (via search_breed_info), not individual-specific 
+insight. Would need: health_notes or similar field on Individual, POST support, 
+richer test data.

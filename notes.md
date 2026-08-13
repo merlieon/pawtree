@@ -156,5 +156,21 @@ traktor vs traktor mening: 0.38304520192123953
 
 ## Wednesday - 11/08/26
 
-- Handle multiple tool calls
 - Create Frontend with working chat bot
+- Fixed multi-tool bug: for-loop over tool_calls needed BOTH the append(msg) 
+  moved outside the loop AND removal of a leftover tool_call = tool_calls[0] 
+  line that silently broke the loop. Two opposite errors (too few responses, 
+  then duplicate tool_call_id) pointed to the same missing fix
+- System prompt needed to distinguish factual questions ("is X good with kids?")
+  from advisory ones ("what breed should I get?") — only the latter should 
+  trigger counter-questions
+- Quality comparison vs a bigger model showed my thin source data was the 
+  limiting factor, not the architecture — "thin in, thin out"
+- Scraped all 376 SKK breeds: 3372 chunks, verified count
+- Switched ChromaDB to PersistentClient so embeddings survive server restarts 
+  (was re-embedding ~3500 chunks on every --reload)
+- Production thinking: ingest should be a separate pipeline from serving, 
+  not triggered by server startup — noted as TODO
+
+  
+  Hur ser Kims släktträd ut? Reg nr SE122994/2019

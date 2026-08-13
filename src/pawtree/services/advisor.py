@@ -1,5 +1,6 @@
 from openai import OpenAI
 from pawtree.services.pedigree import PedigreeRegistry
+from pawtree.models.pedigree import PedigreeNode
 from pawtree.services.breed_knowledge import BreedKnowledge
 
 import json
@@ -14,14 +15,15 @@ class PedigreeAdvisor:
     - Ställ 2-3 motfrågor om användarens situation ENDAST när de ber om hjälp att välja vilken ras de ska skaffa.
     - Ge inga rasrekommendationer förrän du förstått användarens behov."""
 
-    TOOLS = [PedigreeRegistry.TOOL_DEFINITION, BreedKnowledge.TOOL_DEFINITION]
+    TOOLS = [PedigreeRegistry.TOOL_DEFINITION, BreedKnowledge.TOOL_DEFINITION, PedigreeRegistry.PEDIGREE_TOOL_DEFINITION]
 
     def __init__(self, client: OpenAI, registry: PedigreeRegistry, knowledge: BreedKnowledge):
         self._client = client
         self._registry = registry
         self.knowledge = knowledge
 
-    def chat(self, question: str, history: list[dict] | None = None) -> str:
+    def chat(self, question: str, history: list[dict] | None = None) -> tuple[str, PedigreeNode | None]:
+        last_pedigree = None
         clean_history = [
             {"role": m["role"], "content": m["content"]}
             for m in (history or [])
@@ -55,6 +57,13 @@ class PedigreeAdvisor:
                 elif tool_call.function.name == "search_breed_info":
                     chunks = self.knowledge.search(args["question"])
                     content = "\n\n".join(chunks)
+                elif tool_call.function.name == "get_pedigree":
+                    tree = self._registry.build_pedigree(args["reg_nr"])
+                    if tree is None:
+                        content = "Hittades inte i registret"
+                    else:
+                        content = tree.model_dump_json()
+                        last_pedigree = tree
                 else:
                     content = "Okänt verktyg"      # okänt verktyg → kontrollerat "hittades inte"
             
@@ -71,4 +80,4 @@ class PedigreeAdvisor:
             )
             msg = response.choices[0].message
         
-        return msg.content
+        return msg.content, last_pedigree
