@@ -91,7 +91,11 @@ class BreedKnowledge:
                     "question": {
                         "type": "string",
                         "description": "Användarens fråga om raskunskap",
-                    }
+                    },
+                    "breed": {
+                        "type": "string",
+                        "description": "Rasnamnet EXAKT som det nämns i frågan (t.ex. 'chihuahua', 'mudi', 'schäfer'). Fyll ALLTID i detta fält när användaren nämner ett specifikt rasnamn — det används för att filtrera sökningen och upptäcka om rasen har flera varianter.",
+                    },
                 },
                 "required": ["question"],
             },
@@ -101,15 +105,35 @@ class BreedKnowledge:
     def __init__(self, collection) -> None:
         self._collection = collection
     
-    def search(self, question: str, n_results: int = 3) -> list[str]:
-        results = self._collection.query(query_texts=[question], n_results=n_results)
+    def search(self, question: str, n_results: int = 3, breed: str | None = None) -> list[str]:
+        print("SEARCH ANROPAD MED breed =", breed)
+        if breed:
+            variants = self.find_breed_variants(breed)
+            if len(variants) > 1:
+                variant_list = ", ".join(variants)
+                print(variant_list)
+                return [
+                    f"Fråga användaren korthårig eller långhårig, jämför {breed} med {variant_list}, slå ihop {breed} med användarens input så det matchar {variant_list} och uppdatera {breed}"
+                ]
+        results = self._collection.query(
+            query_texts=[question],
+            n_results=n_results if not breed else n_results * 5,
+        )
         documents = results["documents"][0]
         metadatas = results["metadatas"][0]
-        return [
-            f"[{meta['breed']}]\n{doc}"
-            for doc, meta in zip(documents, metadatas)
-        ]
 
+        pairs = list(zip(documents, metadatas))
+        if breed:
+            pairs = [(doc, meta) for doc, meta in pairs if breed.lower() in meta["breed"].lower()]
+            pairs = pairs[:n_results]
+
+        return [f"[{meta['breed']}]\n{doc}" for doc, meta in pairs]
+    
+    def find_breed_variants(self, breed: str) -> list[str]:
+        all_metadata = self._collection.get()["metadatas"]
+        all_breeds = {meta["breed"] for meta in all_metadata}
+        return sorted(b for b in all_breeds if breed.lower() in b.lower())
+    
 if __name__ == "__main__":
     collection = create_breed_collection()
     knowledge = BreedKnowledge(collection)

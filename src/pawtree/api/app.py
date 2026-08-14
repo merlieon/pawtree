@@ -41,8 +41,11 @@ def get_all_individuals() -> list[Individual]:
     return registry.get_all()
 
 @app.get("/individuals/{reg_nr:path}/pedigree")
-def get_individuals_pedigree(reg_nr: str) -> PedigreeNode | None:
-    return registry.build_pedigree(reg_nr)
+def get_individuals_pedigree(reg_nr: str) -> PedigreeNode:
+    tree = registry.build_pedigree(reg_nr)
+    if tree is None:
+        raise HTTPException(status_code=404, detail="No pedigree found")
+    return tree
 
 @app.get("/individuals/{reg_nr:path}")
 def get_individuals(reg_nr: str) -> Individual:

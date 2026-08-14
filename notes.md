@@ -203,3 +203,5 @@ traktor vs traktor mening: 0.38304520192123953
 Questions to ask AI:
 
 - Hur ser Kims släktträd ut? Reg nr SE122994/2019
+- vill veta mer om pudel
+- 

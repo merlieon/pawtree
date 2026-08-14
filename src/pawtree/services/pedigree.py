@@ -78,7 +78,7 @@ class PedigreeRegistry:
             return None
         return self.get(individual.father_reg_nr)
 
-    def build_pedigree(self, reg_nr: str | None, generations: int = 3) -> PedigreeNode | None:
+    def build_pedigree(self, reg_nr: str | None, generations: int = 4) -> PedigreeNode | None:
         individual = self.get(reg_nr)
         if individual is None:
             return None

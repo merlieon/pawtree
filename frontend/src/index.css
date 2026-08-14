@@ -3,9 +3,10 @@
   --color-border: #2e303a;
   --color-text-primary: #e8e8e8;
   --color-text-secondary: #888;
-  --color-bubble-user: #4a4a4a;
+  --color-bubble-user: #2f5d8a;
   --color-bubble-assistant: #2a2a2a;
-
+  --color-border-strong: #444;
+  
   --radius: 8px;
   --radius-lg: 12px;
 

@@ -13,7 +13,7 @@ class PedigreeAdvisor:
     - Använd alltid verktygen för att hämta underlag innan du svarar om raser eller individer. Hitta aldrig på fakta.
     - Svara på direkta faktafrågor om en specifik ras direkt utifrån dokumentationen, utan motfrågor.
     - Ställ 2-3 motfrågor om användarens situation ENDAST när de ber om hjälp att välja vilken ras de ska skaffa.
-    - Ge inga rasrekommendationer förrän du förstått användarens behov."""
+    - Om verktyget search_breed_info svarar med "OBSERVERA: Det finns flera varianter...", svara ALDRIG med generell information om rasen. Fråga istället användaren vilken variant de menar, och vänta på svar innan du fortsätter."""
 
     TOOLS = [PedigreeRegistry.TOOL_DEFINITION, BreedKnowledge.TOOL_DEFINITION, PedigreeRegistry.PEDIGREE_TOOL_DEFINITION]
 
@@ -55,7 +55,8 @@ class PedigreeAdvisor:
                     else:
                         content = individual.model_dump_json()
                 elif tool_call.function.name == "search_breed_info":
-                    chunks = self.knowledge.search(args["question"])
+                    print(args.get("breed"))
+                    chunks = self.knowledge.search(args["question"], breed=args.get("breed"))
                     content = "\n\n".join(chunks)
                 elif tool_call.function.name == "get_pedigree":
                     tree = self._registry.build_pedigree(args["reg_nr"])
